@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Ivelt Topic Hider",
-  "version": "1.0.1",
-  "description": "Hide and manage forum topics on Ivelt. Includes a hidden vault at the bottom to keep your feed clean.",
+  "version": "1.0.2",
+  "description": "Hide and manage forum topics on Ivelt. Group hidden items together at the bottom of the page.",
   "permissions": ["storage"],
   "icons": {
     "16": "icons/icon16.png",
@@ -12,7 +12,14 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.ivelt.com/forum/viewforum.php*"],
+      "matches": [
+        "https://www.ivelt.com/forum/viewforum.php*",
+        "https://www.ivelt.com/forum/search.php?search_id=unreadposts*",
+        "https://www.ivelt.com/forum/search.php?search_id=newposts*",
+        "https://www.ivelt.com/forum/search.php?search_id=egosearch*",
+        "https://www.ivelt.com/forum/search.php?search_id=unanswered*",
+        "https://www.ivelt.com/forum/search.php?search_id=active_topics*"
+      ],
       "js": ["content.js"],
       "css": ["styles.css"]
     }
