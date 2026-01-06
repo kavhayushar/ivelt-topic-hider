@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ivelt Topic Hider",
-  "version": "0.0.0.1",
+  "version": "1.0.1",
   "description": "Hide and manage forum topics on Ivelt. Includes a hidden vault at the bottom to keep your feed clean.",
   "permissions": ["storage"],
   "icons": {
