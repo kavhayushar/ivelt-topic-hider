@@ -1,3 +1,4 @@
+/* Eye Icons Styling */
 .hide-topic-btn {
     cursor: pointer;
     margin-right: 10px;
@@ -10,13 +11,14 @@
 .hide-topic-btn:hover { opacity: 1; }
 .unhide-style svg { fill: #d9534f; }
 
+/* Vault Container */
 #ivelt-hidden-vault-container {
     margin: 30px 0;
     border: 2px solid #12a3eb;
     background-color: #f2f9ff;
     border-radius: 4px;
     clear: both;
-    display: block !important; /* Ensure the container itself is visible */
+    display: block !important;
 }
 
 .vault-header {
@@ -29,7 +31,7 @@
     align-items: center;
 }
 
-/* Force the button text to be visible */
+/* Force Toggle Button Visibility */
 .vault-toggle-btn {
     cursor: pointer !important;
     background: #ffffff !important;
@@ -38,21 +40,22 @@
     padding: 5px 12px !important;
     border-radius: 4px !important;
     font-size: 12px !important;
-    font-family: sans-serif !important;
+    font-family: Arial, sans-serif !important;
     display: inline-block !important;
     line-height: normal !important;
     text-transform: none !important;
+    height: auto !important;
+    width: auto !important;
 }
 
 .vault-toggle-btn:hover {
-    background: #e6e6e6 !important;
+    background: #eeeeee !important;
 }
 
 #ivelt-hidden-vault-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: none;
 }
 
 #ivelt-stats-bar {

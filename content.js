@@ -8,13 +8,12 @@ chrome.storage.local.get([STORAGE_KEY], (result) => {
 });
 
 function init(hiddenIds) {
-  // Select all potential topic lists (Sticky, Announcements, Regular)
   const topicLists = document.querySelectorAll(".topiclist.topics");
   if (topicLists.length === 0) return;
 
-  const { vaultList, statsBar } = createVaultUI();
+  const { vaultList, statsBar, toggleBtn } = createVaultUI();
 
-  topicLists.forEach((list) => {
+  topicLists.forEach((list, listIdx) => {
     const topics = list.querySelectorAll("li.row");
 
     topics.forEach((topicRow) => {
@@ -24,8 +23,7 @@ function init(hiddenIds) {
       const topicId = new URLSearchParams(link.href.split("?")[1]).get("t");
       if (!topicId) return;
 
-      // Store original parent list to return to later
-      topicRow.dataset.originalParentIdx = Array.from(topicLists).indexOf(list);
+      topicRow.dataset.originalParentIdx = listIdx;
 
       const innerDiv = topicRow.querySelector(".list-inner");
       const actionBtn = document.createElement("span");
@@ -48,16 +46,16 @@ function init(hiddenIds) {
           actionBtn,
           vaultList,
           statsBar,
-          topicLists
+          topicLists,
+          toggleBtn
         );
       });
     });
   });
-
-  updateStats(vaultList, statsBar);
+  updateStats(vaultList, statsBar, toggleBtn);
 }
 
-function handleToggle(topicId, row, btn, vault, stats, allLists) {
+function handleToggle(topicId, row, btn, vault, stats, allLists, toggleBtn) {
   chrome.storage.local.get([STORAGE_KEY], (res) => {
     let ids = res[STORAGE_KEY] || [];
     const isCurrentlyHidden = ids.includes(topicId);
@@ -65,7 +63,7 @@ function handleToggle(topicId, row, btn, vault, stats, allLists) {
     if (isCurrentlyHidden) {
       ids = ids.filter((id) => id !== topicId);
       const originalList = allLists[row.dataset.originalParentIdx];
-      originalList.prepend(row); // Moves it back to its specific original list
+      originalList.appendChild(row);
       updateButtonState(btn, false);
     } else {
       ids.push(topicId);
@@ -74,19 +72,18 @@ function handleToggle(topicId, row, btn, vault, stats, allLists) {
     }
 
     chrome.storage.local.set({ [STORAGE_KEY]: ids }, () => {
-      updateStats(vault, stats);
+      updateStats(vault, stats, toggleBtn);
     });
   });
 }
 
 function updateButtonState(btn, isHidden) {
   btn.innerHTML = isHidden ? ICON_UNHIDE : ICON_HIDE;
-  btn.title = isHidden ? "Unhide topic (move back)" : "Hide topic";
+  btn.title = isHidden ? "Unhide topic" : "Hide topic";
   btn.classList.toggle("unhide-style", isHidden);
 }
 
 function createVaultUI() {
-  // Find the last forum block to place the vault after it
   const allForumBlocks = document.querySelectorAll(".forumbg");
   const lastBlock = allForumBlocks[allForumBlocks.length - 1];
 
@@ -94,11 +91,11 @@ function createVaultUI() {
   container.id = "ivelt-hidden-vault-container";
   container.innerHTML = `
         <div class="vault-header">
-            <span style="color: white !important;">Hidden Topics Vault (Combined)</span>
+            <span style="color: white !important;">Hidden Topics Vault</span>
             <button type="button" class="vault-toggle-btn" id="ivelt-vault-toggle">Show Hidden Topics</button>
         </div>
         <div id="ivelt-stats-bar"></div>
-        <ul id="ivelt-hidden-vault-list" class="topiclist topics" style="display: none;"></ul>
+        <ul id="ivelt-hidden-vault-list" class="topiclist topics" style="display: none !important;"></ul>
     `;
 
   lastBlock.after(container);
@@ -109,17 +106,20 @@ function createVaultUI() {
 
   toggleBtn.addEventListener("click", () => {
     const isHidden =
-      vaultList.style.display === "none" || vaultList.style.display === "";
-    vaultList.style.display = isHidden ? "block" : "none";
-    toggleBtn.innerText = isHidden
-      ? "Collapse Hidden Topics"
-      : "Show Hidden Topics";
+      vaultList.style.display === "none" ||
+      vaultList.style.getPropertyValue("display") === "none";
+    vaultList.style.setProperty(
+      "display",
+      isHidden ? "block" : "none",
+      "important"
+    );
+    toggleBtn.innerText = isHidden ? "Collapse Vault" : "Show Hidden Topics";
   });
 
-  return { vaultList, statsBar };
+  return { vaultList, statsBar, toggleBtn };
 }
 
-function updateStats(vaultList, statsBar) {
+function updateStats(vaultList, statsBar, toggleBtn) {
   const hiddenRows = vaultList.querySelectorAll("li.row");
   const total = hiddenRows.length;
   let unread = 0;
@@ -127,5 +127,5 @@ function updateStats(vaultList, statsBar) {
     const dl = row.querySelector("dl");
     if (dl && dl.className.includes("unread")) unread++;
   });
-  statsBar.innerHTML = `Total hidden across all sections: <b>${total}</b> (<b>${unread}</b> unread).`;
+  statsBar.innerHTML = `Total hidden: <b>${total}</b> (<b>${unread}</b> unread).`;
 }
