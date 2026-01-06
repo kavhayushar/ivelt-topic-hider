@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Ivelt Topic Hider",
+  "version": "1.0",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.ivelt.com/forum/viewforum.php*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
